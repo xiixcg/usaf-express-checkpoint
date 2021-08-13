@@ -9,11 +9,9 @@ const knex = require('knex')(require('./knexfile.js')[ENVIRONMENT]);
 app.use(express.json());
 
 app.get('/movies', function (req, res) {
-
   var title = req.query.title;
 
   if (typeof title !== 'undefined') {
-
     knex
       .select('*')
       .from('movies')
@@ -21,9 +19,7 @@ app.get('/movies', function (req, res) {
       .then(data => {
         if (data.length === 0) {
           throw 'Movie title not found'
-
         } else {
-
           return res.status(200).json(data)
         }
       })
@@ -33,9 +29,7 @@ app.get('/movies', function (req, res) {
             err
         })
       })
-
   } else {
-
     knex
       .select('*')
       .from('movies')
@@ -47,7 +41,6 @@ app.get('/movies', function (req, res) {
         })
       );
   }
-
 });
 
 app.get('/movies/:id', function (req, res) {
@@ -80,15 +73,18 @@ app.get('/movies/:id', function (req, res) {
 });
 
 app.post('/movies', (req, res) => {
+  //curl -X POST -H "Content-Type: application/json" -d '{"title":"John Wich", "runtime":80, "release_year":2015, "director":"not known"}' http://localhost:8080/movies
+  const movie = req.body;
 
   knex
-    .insert([{ title: 'Great Gatsby', runtime: '451', release_year: 1991, director: 'james' }],
+    .insert([{ title: movie.title, runtime: movie.runtime, release_year: movie.release_year, director: movie.director }],
       ['title', 'runtime', 'release_year', 'director'])
     .into('movies')
     .then(data => res.json(data))
 })
 
-app.del('/movies/:id', (req, res) => {
+app.delete('/movies/:id', (req, res) => {
+  //curl -X DELETE http://localhost:8080/movies/20
   var id = req.params.id;
 
   if (isNaN(parseInt(id))) {
