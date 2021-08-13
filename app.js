@@ -86,17 +86,11 @@ app.get('/movies/:id', function (req, res) {
 
 app.post('/movies', (req, res) => {
 
-  knex('movies').insert([{ title: "From Paris With Love" }, { runtime: 94 }, { release_year: 2010 }, { director: "Pierre Morel" }])
   knex
-    .select('*')
-    .from('movies')
-    .then(data => res.status(200).json(data))
-    .catch(err =>
-      res.status(404).json({
-        message:
-          'Page not found'
-      })
-    );
+    .insert([{ title: 'Great Gatsby', runtime: '451', release_year: 1991, director: 'james' }],
+      ['title', 'runtime', 'release_year', 'director'])
+    .into('movies')
+    .then(data => res.json(data))
 })
 
 app.listen(PORT, () => {
