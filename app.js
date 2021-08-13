@@ -20,7 +20,7 @@ app.get('/movies', function (req, res) {
       .where('title', title)
       .then(data => {
         if (data.length === 0) {
-          throw 'error'
+          throw 'Movie title not found'
 
         } else {
 
@@ -30,7 +30,7 @@ app.get('/movies', function (req, res) {
       .catch(err => {
         res.status(404).json({
           message:
-            'Movie title not found'
+            err
         })
       })
 
@@ -51,7 +51,6 @@ app.get('/movies', function (req, res) {
 });
 
 app.get('/movies/:id', function (req, res) {
-
   var id = req.params.id;
 
   if (isNaN(parseInt(id))) {
@@ -59,26 +58,22 @@ app.get('/movies/:id', function (req, res) {
       message:
         'Invalid ID supplied'
     })
-
   } else {
-
     knex
       .select('*')
       .from('movies')
       .where('id', id)
       .then(data => {
         if (data.length === 0) {
-          throw 'error'
-
+          throw 'Movies ID not found'
         } else {
-
           return res.status(200).json(data)
         }
       })
       .catch(err => {
         res.status(404).json({
           message:
-            'Movies ID not found'
+            err
         })
       })
   }
@@ -91,6 +86,35 @@ app.post('/movies', (req, res) => {
       ['title', 'runtime', 'release_year', 'director'])
     .into('movies')
     .then(data => res.json(data))
+})
+
+app.del('/movies/:id', (req, res) => {
+  var id = req.params.id;
+
+  if (isNaN(parseInt(id))) {
+    res.status(400).json({
+      message:
+        'Invalid ID supplied'
+    })
+  } else {
+    knex
+      .del(['title', 'runtime', 'release_year', 'director'])
+      .from('movies')
+      .where('id', id)
+      .then(data => {
+        if (data.length === 0) {
+          throw 'Movies ID not found'
+        } else {
+          return res.status(200).json(data)
+        }
+      })
+      .catch(err => {
+        res.status(404).json({
+          message:
+            err
+        })
+      })
+  }
 })
 
 app.listen(PORT, () => {
